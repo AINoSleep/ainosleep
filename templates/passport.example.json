@@ -1,0 +1,60 @@
+{
+  "_comment": "AINoSleep 数据护照 — 跨会话历史记录，请勿手动删除字段",
+  "account": "@your_username",
+  "created_at": "YYYY-MM-DD",
+  "last_analysis": null,
+
+  "baseline": {
+    "followers": 0,
+    "avg_likes_per_tweet": 0,
+    "avg_views_per_tweet": 0,
+    "avg_engagement_rate": "0%",
+    "posting_frequency": "0 posts/week",
+    "recorded_at": "YYYY-MM-DD"
+  },
+
+  "goals": {
+    "primary": "",
+    "target_followers_90d": 0,
+    "target_engagement_rate": "0%",
+    "target_posts_per_week": 5
+  },
+
+  "content_mix_target": {
+    "short_tweet": 40,
+    "thread": 30,
+    "reply": 20,
+    "long_form": 10
+  },
+
+  "weekly_snapshots": [],
+
+  "history": [
+    {
+      "_comment": "以下为示例记录，Analyst 模块会自动写入真实数据",
+      "id": "YYYY-MM-DD-01",
+      "title": "推文标题摘要",
+      "format": "short_tweet",
+      "published_at": "YYYY-MM-DDTHH:MM:00",
+      "topic": "话题标签",
+      "hook_type": "反常识",
+      "has_hashtag": false,
+      "posted_hour": 20,
+      "posted_weekday": "Monday",
+      "metrics": {
+        "views": 0,
+        "likes": 0,
+        "retweets": 0,
+        "quotes": 0,
+        "replies": 0,
+        "follows_gained": 0
+      },
+      "calculated": {
+        "engagement_rate": "0%",
+        "performance_score": 1.0
+      },
+      "attribution_notes": "",
+      "tags": []
+    }
+  ]
+}

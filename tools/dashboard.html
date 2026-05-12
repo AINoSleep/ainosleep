@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AINoSleep · Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #222;
+    --border: #2a2a2a;
+    --accent: #1d9bf0;
+    --accent2: #00ba7c;
+    --accent3: #f59e0b;
+    --danger: #f4212e;
+    --text: #e7e9ea;
+    --text-dim: #71767b;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header h1 { font-size: 16px; font-weight: 700; }
+  header .subtitle { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+  .import-btn {
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .import-btn:hover { opacity: 0.85; }
+
+  .page { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+  /* KPI row */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .kpi .label { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+  .kpi .val { font-size: 28px; font-weight: 700; }
+  .kpi .delta { font-size: 12px; margin-top: 4px; }
+  .delta.up { color: var(--accent2); }
+  .delta.down { color: var(--danger); }
+  .delta.flat { color: var(--text-dim); }
+
+  /* Chart area */
+  .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card h3 { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Bar chart */
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label { font-size: 12px; color: var(--text-dim); width: 60px; flex-shrink: 0; text-align: right; }
+  .bar-track { flex: 1; background: var(--border); border-radius: 4px; height: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .bar-val { font-size: 12px; color: var(--text); width: 40px; flex-shrink: 0; }
+
+  /* Donut chart */
+  .donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  canvas#donut { max-width: 160px; }
+  .donut-legend { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .legend-pct { margin-left: auto; color: var(--text-dim); }
+
+  /* Table */
+  .table-card { margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-thread { background: #1d9bf020; color: var(--accent); }
+  .badge-short { background: #00ba7c20; color: var(--accent2); }
+  .badge-reply { background: #f59e0b20; color: var(--accent3); }
+  .score { font-weight: 700; }
+  .score.high { color: var(--accent2); }
+  .score.mid { color: var(--accent3); }
+  .score.low { color: var(--danger); }
+
+  /* Import modal */
+  .modal-bg {
+    display: none;
+    position: fixed; inset: 0;
+    background: #000a;
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    width: 500px;
+    max-width: 95vw;
+  }
+  .modal h2 { font-size: 15px; margin-bottom: 8px; }
+  .modal p { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.6; }
+  .modal textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 12px;
+    font-family: monospace;
+    resize: vertical;
+    min-height: 200px;
+    outline: none;
+  }
+  .modal textarea:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-primary {
+    flex: 1;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .btn-secondary {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>AINoSleep · Dashboard</h1>
+    <div class="subtitle">本地数据看板 — 所有数据存储在浏览器，不上传任何服务器</div>
+  </div>
+  <button class="import-btn" onclick="openModal()">+ 录入数据</button>
+</header>
+
+<div class="page" id="mainPage">
+  <!-- Empty state by default, replaced when data exists -->
+</div>
+
+<!-- Import Modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2>录入推文数据</h2>
+    <p>粘贴以下格式的数据（每行一条推文），或将 AINoSleep Analyst 生成的 JSON 粘贴进来：</p>
+    <textarea id="importData" placeholder='[
+  {
+    "title": "推文标题",
+    "date": "2026-05-10",
+    "format": "short",
+    "views": 5000,
+    "likes": 120,
+    "retweets": 30,
+    "replies": 15,
+    "follows": 8
+  }
+]'></textarea>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn-primary" onclick="importData()">导入数据</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'ainosleep_dashboard_v1';
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function openModal() { document.getElementById('modalBg').classList.add('open'); }
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+
+function importData() {
+  const raw = document.getElementById('importData').value.trim();
+  try {
+    const incoming = JSON.parse(raw);
+    const arr = Array.isArray(incoming) ? incoming : [incoming];
+    const existing = loadData();
+    const merged = [...existing, ...arr.map(d => ({
+      ...d,
+      id: d.id || Date.now() + Math.random(),
+      engagement: calcEng(d)
+    }))];
+    saveData(merged);
+    document.getElementById('importData').value = '';
+    closeModal();
+    renderDashboard();
+  } catch(e) {
+    alert('数据格式有误，请检查 JSON 格式是否正确。\n\n错误：' + e.message);
+  }
+}
+
+function calcEng(d) {
+  const v = d.views || 1;
+  return (((d.likes||0) + (d.retweets||0) + (d.replies||0)) / v * 100).toFixed(2);
+}
+
+function renderDashboard() {
+  const data = loadData();
+  const page = document.getElementById('mainPage');
+
+  if (data.length === 0) {
+    page.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📊</div>
+        <p>还没有数据。<br>点击右上角「录入数据」导入你的推文数据，<br>或让 AINoSleep Analyst 模块帮你生成 JSON。</p>
+      </div>`;
+    return;
+  }
+
+  // KPIs
+  const total = data.length;
+  const totalViews = data.reduce((s,d) => s+(d.views||0), 0);
+  const totalLikes = data.reduce((s,d) => s+(d.likes||0), 0);
+  const avgEng = (data.reduce((s,d) => s+parseFloat(d.engagement||0), 0) / total).toFixed(2);
+  const totalFollows = data.reduce((s,d) => s+(d.follows||0), 0);
+
+  // Content mix
+  const mix = {};
+  data.forEach(d => { mix[d.format||'unknown'] = (mix[d.format||'unknown']||0) + 1; });
+
+  // Top posts by engagement
+  const sorted = [...data].sort((a,b) => parseFloat(b.engagement) - parseFloat(a.engagement));
+  const top5 = sorted.slice(0, 5);
+
+  // Weekly bar (last 8 weeks)
+  const weekMap = {};
+  data.forEach(d => {
+    if (!d.date) return;
+    const dt = new Date(d.date);
+    const week = getWeekKey(dt);
+    if (!weekMap[week]) weekMap[week] = { views: 0, posts: 0 };
+    weekMap[week].views += (d.views || 0);
+    weekMap[week].posts++;
+  });
+  const weeks = Object.keys(weekMap).sort().slice(-8);
+  const maxViews = Math.max(...weeks.map(w => weekMap[w].views), 1);
+
+  const colors = { short: '#1d9bf0', thread: '#00ba7c', reply: '#f59e0b', long: '#a855f7', unknown: '#71767b' };
+  const labels = { short: '短推', thread: 'Thread', reply: '回复', long: '长文', unknown: '其他' };
+
+  const mixTotal = Object.values(mix).reduce((s,v)=>s+v,0);
+  const mixItems = Object.entries(mix).map(([k,v]) => ({
+    key: k, label: labels[k]||k, count: v,
+    pct: Math.round(v/mixTotal*100), color: colors[k]||'#888'
+  }));
+
+  page.innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="label">总推文数</div>
+        <div class="val" style="color:var(--accent)">${total}</div>
+        <div class="delta flat">已录入</div>
+      </div>
+      <div class="kpi">
+        <div class="label">总浏览量</div>
+        <div class="val">${fmtNum(totalViews)}</div>
+        <div class="delta flat">累计</div>
+      </div>
+      <div class="kpi">
+        <div class="label">平均互动率</div>
+        <div class="val" style="color:var(--accent2)">${avgEng}%</div>
+        <div class="delta flat">(赞+转+回) / 浏览</div>
+      </div>
+      <div class="kpi">
+        <div class="label">带来新关注</div>
+        <div class="val" style="color:var(--accent3)">${totalFollows}</div>
+        <div class="delta flat">内容引流</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="card">
+        <h3>周浏览量趋势（近 8 周）</h3>
+        <div class="bar-chart">
+          ${weeks.map(w => `
+            <div class="bar-row">
+              <span class="bar-label">${w.slice(5)}</span>
+              <div class="bar-track">
+                <div class="bar-fill" style="width:${weekMap[w].views/maxViews*100}%;background:var(--accent)"></div>
+              </div>
+              <span class="bar-val">${fmtNum(weekMap[w].views)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <h3>内容格式分布</h3>
+        <div class="donut-wrap">
+          <canvas id="donut" width="160" height="160"></canvas>
+          <div class="donut-legend">
+            ${mixItems.map(m => `
+              <div class="legend-item">
+                <div class="legend-dot" style="background:${m.color}"></div>
+                <span>${m.label}</span>
+                <span class="legend-pct">${m.pct}%</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card table-card">
+      <h3>互动率 Top 5 内容</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>内容</th>
+            <th>格式</th>
+            <th>日期</th>
+            <th>浏览</th>
+            <th>赞</th>
+            <th>互动率</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${top5.map((d,i) => {
+            const eng = parseFloat(d.engagement);
+            const cls = eng >= 3 ? 'high' : eng >= 1 ? 'mid' : 'low';
+            const fmt = d.format || 'unknown';
+            return `<tr>
+              <td style="color:var(--text-dim)">${i+1}</td>
+              <td>${d.title || '—'}</td>
+              <td><span class="badge badge-${fmt}">${labels[fmt]||fmt}</span></td>
+              <td style="color:var(--text-dim)">${d.date||'—'}</td>
+              <td>${fmtNum(d.views||0)}</td>
+              <td>${d.likes||0}</td>
+              <td class="score ${cls}">${eng}%</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  drawDonut(mixItems);
+}
+
+function drawDonut(items) {
+  const canvas = document.getElementById('donut');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = 80, cy = 80, r = 65, inner = 40;
+  ctx.clearRect(0, 0, 160, 160);
+  let start = -Math.PI / 2;
+  items.forEach(item => {
+    const slice = (item.pct / 100) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, start + slice);
+    ctx.closePath();
+    ctx.fillStyle = item.color;
+    ctx.fill();
+    start += slice;
+  });
+  ctx.beginPath();
+  ctx.arc(cx, cy, inner, 0, 2 * Math.PI);
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fill();
+}
+
+function fmtNum(n) {
+  if (n >= 10000) return (n/10000).toFixed(1) + 'w';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'k';
+  return String(n);
+}
+
+function getWeekKey(d) {
+  const jan1 = new Date(d.getFullYear(), 0, 1);
+  const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  return `${d.getFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+
+// Init
+renderDashboard();
+</script>
+</body>
+</html>

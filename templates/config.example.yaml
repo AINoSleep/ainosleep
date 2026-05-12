@@ -1,0 +1,45 @@
+# AINoSleep · 账号配置文件
+# 复制此文件为 config.yaml 并填写你的信息
+
+# ─── 账号信息 ───────────────────────────
+account:
+  username: "@your_username"       # 你的 X 用户名
+  display_name: "你的显示名"
+  language: "zh"                   # zh / en / bilingual
+
+# ─── 内容方向 ───────────────────────────
+content:
+  primary_topic: "AI工具与内容创作"  # 主要话题方向（用自己的话描述）
+  secondary_topics:
+    - "个人成长"
+    - "独立创作者"
+  target_audience: "想用 AI 提升创作效率的内容创作者"
+  content_goal: "涨粉 + 建立行业影响力"  # 涨粉/引流/销售/建立影响力
+
+# ─── 发帖节奏 ───────────────────────────
+schedule:
+  posts_per_week: 5                # 每周发帖目标数量
+  preferred_times:                 # 偏好发帖时段（24小时制）
+    - "09:00"
+    - "12:00"
+    - "20:00"
+  rest_days:                       # 不发帖的日子
+    - "Sunday"
+  content_mix:                     # 内容格式比例（百分比，总和=100）
+    short_tweet: 40
+    thread: 30
+    reply: 20
+    long_form: 10
+
+# ─── 声音设置 ───────────────────────────
+voice:
+  voice_file: "voice.md"           # 风格指南文件路径
+  consistency_threshold: 7         # 声音校验最低分（1-10），低于此分自动重写
+
+# ─── 工作区路径 ─────────────────────────
+workspace:
+  root: "./ainosleep-workspace"
+  drafts: "./ainosleep-workspace/drafts"
+  sources: "./ainosleep-workspace/sources"
+  schedules: "./ainosleep-workspace/schedules"
+  reports: "./ainosleep-workspace/reports"
