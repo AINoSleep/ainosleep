@@ -464,23 +464,31 @@ function copyAll() {
 }
 
 function importThread() {
-  const raw = document.getElementById('importInput').value.trim();
+  let raw = document.getElementById('importInput').value.trim();
   if (!raw) return;
 
-  // Try to split by [N/M] pattern first
-  let parts = raw.split(/\[\d+\/\d+\]\s*/g).filter(s => s.trim());
+  // 去掉 YAML frontmatter（--- 开头的头部块）
+  raw = raw.replace(/^---[\s\S]*?---\n?/, '');
 
-  // Fallback: split by double newline
+  // 按 [N/M] 拆分
+  let parts = raw.split(/\n?\[\d+\/\d+\]\n?/g).filter(s => s.trim());
+
+  // 回退：按双换行拆分
   if (parts.length <= 1) {
     parts = raw.split(/\n\n+/).filter(s => s.trim());
   }
 
   if (parts.length === 0) return;
 
-  tweets = parts.map((p, i) => ({ id: nextId++, text: p.trim() }));
+  // 每条去掉首尾的 --- 分隔线和多余空行
+  tweets = parts.map(p => ({
+    id: nextId++,
+    text: p.replace(/^\s*---\s*$/gm, '').trim()
+  }));
+
   document.getElementById('importInput').value = '';
   render();
-  showToast(`已导入 ${parts.length} 条推文`);
+  showToast(`已导入 ${tweets.length} 条推文`);
 }
 
 function showToast(msg) {
