@@ -313,10 +313,13 @@ function render(){
   document.getElementById('preview').innerHTML = build();
 }
 
-function copyArticle(){
-  var el = document.getElementById('preview');
-  // 移动端复制前自动切到预览，保证内容可见可选中
-  if(window.innerWidth <= 820){ setView('preview'); }
+function showHint(){
+  var h = document.getElementById('hint');
+  h.classList.add('show');
+  setTimeout(function(){ h.classList.remove('show'); }, 2200);
+}
+
+function legacyCopy(el){
   var range = document.createRange();
   range.selectNodeContents(el);
   var sel = window.getSelection();
@@ -324,15 +327,34 @@ function copyArticle(){
   sel.addRange(range);
   var ok = false;
   try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
-  if(ok){
-    var h = document.getElementById('hint');
-    h.classList.add('show');
-    setTimeout(function(){ h.classList.remove('show'); }, 2200);
-    sel.removeAllRanges();
-  } else {
-    // 兜底：保留选区，提示长按复制
-    alert('请长按选中的预览内容，选择“拷贝”');
+  if(ok){ showHint(); sel.removeAllRanges(); }
+  else { alert('请长按选中的预览内容，选择“拷贝”'); }
+}
+
+function copyArticle(){
+  var el = document.getElementById('preview');
+  // 移动端复制前自动切到预览，保证内容可见可选中
+  if(window.innerWidth <= 820){ setView('preview'); }
+
+  var html = el.innerHTML;
+  var plain = el.innerText;
+
+  // 优先用新的 Clipboard API（HTTPS 下手机兼容性更好）
+  if(navigator.clipboard && window.ClipboardItem){
+    try {
+      var item = new ClipboardItem({
+        'text/html': new Blob([html], {type:'text/html'}),
+        'text/plain': new Blob([plain], {type:'text/plain'})
+      });
+      navigator.clipboard.write([item]).then(function(){
+        showHint();
+      }).catch(function(){
+        legacyCopy(el);
+      });
+      return;
+    } catch(e){ /* 落到兜底 */ }
   }
+  legacyCopy(el);
 }
 
 function clearAll(){
