@@ -23,7 +23,7 @@ ainosleep init
 
 | 模块 | 触发词 | 功能 |
 |------|--------|------|
-| 🏭 Factory 内容工厂 | `写推文` / `写 thread` | 素材→短推/Thread/封面/评论/预热，五格同出 |
+| 🏭 Factory 内容工厂 | `写推文` / `写 thread` / `写长文章` | 素材→短推/Thread/X Article/封面/评论/预热，六格同出 |
 | 📅 Publisher 发布台 | `排期` / `日历` | 可视化周历，分条复制，草稿管理 |
 | 🧠 Strategist 军师 | `作战计划` / `策略` | 首次建档/周度/季度三模式，执行纪律评分 |
 | 📊 Analyst 复盘台 | `复盘` / `分析数据` | 录入数据，归因分析，更新数据护照 |
@@ -36,6 +36,7 @@ ainosleep init
 | 工具 | 位置 | 用途 |
 |------|------|------|
 | Thread Composer | `tools/thread-composer.html` | Thread 可视化编排，逐条复制 |
+| WeChat Composer | `tools/wechat-composer.html` | 公众号一键排版，复制即带格式 |
 | Dashboard | `tools/dashboard.html` | 本地数据看板，互动率趋势图 |
 
 浏览器直接打开，无需安装，数据存储在浏览器本地。
