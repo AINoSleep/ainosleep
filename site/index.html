@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AINoSleep 工具箱 · 免费自媒体内容工具集合</title>
+<meta name="description" content="一套为内容创作者打造的免费在线小工具集合，无需注册，即开即用。封面图生成、图文卡片制作、公众号排版。本地运行，不上传数据。">
+<meta name="keywords" content="自媒体工具,免费在线工具,封面生成器,图文卡片,公众号排版,小红书工具,抖音工具,内容创作工具,AINoSleep">
+<meta name="author" content="AINoSleep">
+<meta name="theme-color" content="#0f1115">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ainosleep.com/">
+<meta property="og:title" content="AINoSleep 工具箱 · 免费自媒体内容工具">
+<meta property="og:description" content="为内容创作者打造的免费在线小工具，浏览器本地运行，不上传数据。">
+<meta property="og:site_name" content="AINoSleep 工具箱">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:creator" content="@AINoSleep">
+<link rel="canonical" href="https://tools.ainosleep.com/">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%231a1e28'/><circle cx='48' cy='16' r='6' fill='%234f8cff'/><text x='32' y='44' font-size='32' font-family='-apple-system,sans-serif' font-weight='700' fill='%23e6e9ef' text-anchor='middle'>A</text></svg>">
+
+<style>
+  :root {
+    --bg: #0f1115;
+    --bg-2: #161922;
+    --card: #1a1e28;
+    --card-hover: #20252f;
+    --border: #2a2f3a;
+    --text: #e6e9ef;
+    --muted: #8b93a5;
+    --accent: #4f8cff;
+    --accent-glow: rgba(79,140,255,.25);
+    --green: #6ecfa0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+                 "Microsoft YaHei", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  /* 背景装饰光晕 */
+  body::before {
+    content: "";
+    position: fixed;
+    top: -20%; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 600px;
+    background: radial-gradient(ellipse at center, var(--accent-glow), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    text-align: center;
+    padding: 72px 0 48px;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  header h1 {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff 30%, #9db8ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header p { color: var(--muted); font-size: 16px; max-width: 480px; margin: 0 auto; }
+
+  .section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin: 8px 0 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+    padding-bottom: 64px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px;
+    text-decoration: none;
+    color: inherit;
+    transition: .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card.live:hover {
+    background: var(--card-hover);
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,.35), 0 0 0 1px var(--accent-glow);
+  }
+  .card-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 24px;
+    background: linear-gradient(135deg, #2a3550, #1d2330);
+    margin-bottom: 18px;
+  }
+  .card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+  .card p { font-size: 14px; color: var(--muted); flex: 1; }
+  .card .badge {
+    position: absolute; top: 18px; right: 18px;
+    font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    letter-spacing: .5px;
+  }
+  .badge-live { background: rgba(79,140,255,.15); color: #7ea6ff; }
+  .badge-soon { background: rgba(139,147,165,.12); color: var(--muted); }
+  .badge-service { background: rgba(110,207,160,.12); color: var(--green); }
+
+  .card.soon { opacity: .6; cursor: default; }
+  .card-arrow { margin-top: 16px; font-size: 13px; color: var(--accent); font-weight: 500; }
+
+  footer {
+    text-align: center;
+    padding: 32px 0 48px;
+    color: var(--muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer .row2 { margin-top: 10px; }
+  footer .row2 a { margin: 0 10px; }
+
+  @media (max-width: 640px) {
+    header { padding: 48px 0 32px; }
+    header h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo"><span class="dot"></span>AINoSleep · 自媒体工具箱</div>
+    <h1>AINoSleep 工具箱</h1>
+    <p>失业普通人顺手做的几个内容工具。免费、无需注册、即开即用，全部在你浏览器本地运行。</p>
+  </header>
+
+  <div class="section-title">全部工具</div>
+
+  <div class="grid">
+
+    <a class="card live" href="./cover.html">
+      <span class="badge badge-live">已上线</span>
+      <div class="card-icon">🎨</div>
+      <h3>封面工坊</h3>
+      <p>大标题钩子封面。26 套配色、6 种装饰风格、7 个平台尺寸：X 横版、抖音、B站、小红书、金句卡，一键导出 PNG。</p>
+      <div class="card-arrow">打开工具 →</div>
+    </a>
+
+    <a class="card live" href="./article.html">
+      <span class="badge badge-live">已上线</span>
+      <div class="card-icon">📝</div>
+      <h3>图文工坊</h3>
+      <p>图文内容卡。粘贴文字自动排版，要点 / 引用块 / 关键词高亮着色，小红书图文、抖音图文、金句卡全尺寸。</p>
+      <div class="card-arrow">打开工具 →</div>
+    </a>
+
+    <a class="card live" href="./wechat.html">
+      <span class="badge badge-live">已上线</span>
+      <div class="card-icon">✍️</div>
+      <h3>公众号一键排版</h3>
+      <p>Markdown 粘进去，自动套公众号格式，复制即带样式。</p>
+      <div class="card-arrow">打开工具 →</div>
+    </a>
+
+    <div class="card soon">
+      <span class="badge badge-soon">开发中</span>
+      <div class="card-icon">🔍</div>
+      <h3>去 AI 味检测器</h3>
+      <p>粘段文字，自动高亮 AI 味写法和黑话，给替换建议。</p>
+    </div>
+
+    <div class="card soon">
+      <span class="badge badge-soon">开发中</span>
+      <div class="card-icon">🧩</div>
+      <h3>元提示词构建器</h3>
+      <p>四步填空，出一段完整的 Claude / ChatGPT Projects 元提示词。</p>
+    </div>
+
+    <div class="card soon">
+      <span class="badge badge-soon">开发中</span>
+      <div class="card-icon">🔤</div>
+      <h3>字数统计</h3>
+      <p>实时统计中英文字数、字符数、X 推文真实字符占用、预计阅读时间。</p>
+    </div>
+
+  </div>
+
+  <div class="section-title">我的服务</div>
+
+  <div class="grid" style="padding-bottom: 64px;">
+
+    <a class="card live" href="https://ainosleep.com" target="_blank" rel="noopener">
+      <span class="badge badge-service">AI 代写</span>
+      <div class="card-icon">📝</div>
+      <h3>AI 内容代写</h3>
+      <p>小红书 / 公众号 / 产品文案 / 朋友圈。新单先免费做 5 条看效果，不行不要钱。</p>
+      <div class="card-arrow">了解一下 →</div>
+    </a>
+
+    <a class="card live" href="https://x.com/AINoSleep" target="_blank" rel="noopener">
+      <span class="badge badge-service">实录</span>
+      <div class="card-icon">🛠</div>
+      <h3>失业自救实录</h3>
+      <p>每天在 X 上把摸索的过程发出来。踩过的坑、跑通的路子、真实的数字。</p>
+      <div class="card-arrow">前往关注 →</div>
+    </a>
+
+    <a class="card live" href="https://github.com/AINoSleep" target="_blank" rel="noopener">
+      <span class="badge badge-service">开源</span>
+      <div class="card-icon">💾</div>
+      <h3>GitHub 仓库</h3>
+      <p>工具源码全部开源，想改自己拿，或者给我提 issue。</p>
+      <div class="card-arrow">前往查看 →</div>
+    </a>
+
+  </div>
+
+  <footer>
+    Made by <a href="https://x.com/AINoSleep" target="_blank" rel="noopener">@AINoSleep</a> · 全部工具在浏览器本地运行，不上传任何数据
+    <div class="row2">
+      <a href="https://ainosleep.com">主站</a>
+      <a href="https://x.com/AINoSleep" target="_blank" rel="noopener">X</a>
+      <a href="https://github.com/AINoSleep" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
