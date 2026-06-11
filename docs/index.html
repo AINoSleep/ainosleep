@@ -78,9 +78,11 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 18px;
     padding-bottom: 48px;
+    max-width: 760px;
+    margin: 0 auto;
   }
 
   .card {
@@ -157,7 +159,10 @@
     header { padding: 48px 0 32px; }
     header h1 { font-size: 30px; }
     header p { font-size: 14px; }
-    .grid { gap: 14px; }
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
     .card { padding: 22px; }
   }
 </style>
