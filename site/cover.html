@@ -10,6 +10,7 @@
   <meta name="keywords" content="封面生成器,封面图制作,在线封面工具,小红书封面,抖音封面,B站封面,YouTube封面,X头图,推特头图,视频号封面,公众号封面,免费封面设计,自媒体工具,图片生成器,AINoSleep">
   <meta name="author" content="AINoSleep">
   <meta name="theme-color" content="#0f1115">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230f1115'/><text x='32' y='44' font-size='38' font-family='sans-serif' font-weight='700' fill='%234f8cff' text-anchor='middle'>A</text></svg>">
   <meta property="og:url" content="https://tools.ainosleep.com/cover.html">
   <link rel="canonical" href="https://tools.ainosleep.com/cover.html">
   <meta property="og:type" content="website">
@@ -2330,7 +2331,7 @@
       };
     }
 
-    function applyPreset(idx) {
+    function applyPreset(idx, fillContent = false) {
       const p = PRESETS[idx];
       document.querySelectorAll('.color-btn').forEach(b => b.classList.toggle('active', +b.dataset.scheme === p.scheme));
       applyColorScheme(p.scheme);
@@ -2340,12 +2341,14 @@
       buildDecorations(p.deco);
       document.getElementById('sel-font').value = p.font || DEFAULT_FONT;
       applyFontChoice(p.font || DEFAULT_FONT);
-      const map = { label: 'inp-label', title: 'inp-title', subtitle: 'inp-subtitle', author: 'inp-author' };
-      const targetContent = getPresetContent(p);
-      Object.entries(targetContent).forEach(([k, v]) => {
-        const el = document.getElementById(map[k]);
-        if (el) el.value = v;
-      });
+      if (fillContent) {
+        const map = { label: 'inp-label', title: 'inp-title', subtitle: 'inp-subtitle', author: 'inp-author' };
+        const targetContent = getPresetContent(p);
+        Object.entries(targetContent).forEach(([k, v]) => {
+          const el = document.getElementById(map[k]);
+          if (el) el.value = v;
+        });
+      }
       syncContent();
       const targetVis = getPresetVisibility(p);
       Object.entries(targetVis).forEach(([field, show]) => {
@@ -2764,7 +2767,7 @@
       syncAllSliders();
       initSourcePanel();
       initPresets();
-      applyPreset(0);
+      applyPreset(0, true);
 
       if (meta) {
         if (meta.label)    document.getElementById('inp-label').value    = meta.label;
